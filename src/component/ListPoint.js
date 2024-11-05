@@ -14,7 +14,7 @@ export default function ListPoint(props) {
         isStart,
         isDone
     } = props
-    console.log('xxx isDone', isDone)
+
     return (
         <div className={styles['points']}>
             {(isStart || error) && !isDone && (

@@ -18,15 +18,15 @@ export default function Point(props) {
 
     const [top, setTop] = useState(Math.random() * 410)
     const [left, setLeft] = useState(Math.random() * 420)
-    const [zIndex, setZIndex] = useState( Math.random() * 100)
+    const [zIndex, setZIndex] = useState(10000 - point)
 
     const [buttonColor, setButtonColor] = useState('rgba(209, 97, 17, 1)');
 
     const timerRef = useRef(null);
-    const checkAutoClick = useRef(null);
 
     useEffect(() => {
         clearInterval(timerRef.current); 
+        timerRef.current = null;
         setTop(Math.random() * 410)
         setLeft(Math.random() * 420)
         setCount(3)
@@ -36,16 +36,8 @@ export default function Point(props) {
     }, [restart])
     useImperativeHandle(refPoint, () => ({
         startAutoClick() {
-            if (!checkAutoClick.current) {
-                handleClick();
-            }
+            handleClick();
         },
-        stopAutoClick() {
-            clearInterval(checkAutoClick.current);
-            checkAutoClick.current = null;
-            clearInterval(timerRef.current); 
-            timerRef.current = null;
-        }
     }))
 
     const handleClick = () => {
@@ -56,28 +48,33 @@ export default function Point(props) {
         setShowCounter(true)
 
         let remainTime = 3;
+        if(!timerRef.current) {
+            timerRef.current = setInterval(() => {
+                remainTime -= 0.1;
+                if (remainTime < 0) {
+                    remainTime = 0
+                    setShowCounter(false)
+                    setShowPoint(false)
+                    checkDone(point)
+                    clearInterval(timerRef.current)
+                    timerRef.current = null;
+                    return;
+                } else {
+                    setCount(remainTime.toFixed(1))
+                    const alpha = remainTime / 3; 
+                    setButtonColor(`rgba(209, 97, 17, ${alpha.toFixed(2)})`);
+                }
+            }, 100);
+        }
 
-        timerRef.current = setInterval(() => {
-            remainTime -= 0.1;
-            if (remainTime < 0) {
-                remainTime = 0
-                console.log('123')
-                setShowCounter(false)
-                setShowPoint(false)
-                checkDone(point)
+        return () => {
+            if(timerRef.current) {
                 clearInterval(timerRef.current)
-                timerRef.current = null;
-                return;
-            } else {
-                setCount(remainTime.toFixed(1))
-                const alpha = remainTime / 3; 
-                setButtonColor(`rgba(209, 97, 17, ${alpha.toFixed(2)})`);
             }
-        }, 100);
+        }
 
     }
     useEffect(() => {
-        console.log('xx clear interval')
         return () => {
            clearInterval(timerRef.current); 
            timerRef.current = null;
@@ -101,6 +98,7 @@ export default function Point(props) {
                 transition: 'background-color 0.1s ease',
                 top: `${top}px`, 
                 left: `${left}px`, 
+                zIndex: zIndex
             }}
         >
             <div>

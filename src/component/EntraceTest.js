@@ -52,8 +52,6 @@ export default function EntraceTest() {
     };
 
     const checkValidateClick = (point) => {
-        console.log('xxx point', point)
-        console.log('xx number next', numberNext)
         if(point == numberNext) {
             if(point == numberPoint) {
                 setShowNext(false)
@@ -90,7 +88,6 @@ export default function EntraceTest() {
             }, 1000);
         } else {
             clearInterval(checkAutoPlay);
-            pointRefs?.current[numberNext - 1]?.stopAutoClick();
         }
 
         return () => clearInterval(checkAutoPlay);
